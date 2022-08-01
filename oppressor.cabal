@@ -1,0 +1,67 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.4.
+--
+-- see: https://github.com/sol/hpack
+
+name:           oppressor
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/albertprz/oppressor#readme>
+homepage:       https://github.com/albertprz/oppressor#readme
+bug-reports:    https://github.com/albertprz/oppressor/issues
+author:         Alberto Perez Lopez
+maintainer:     albertoperez1994@gmail.com
+copyright:      2022 Alberto Perez Lopez
+license:        BSD3
+build-type:     Simple
+extra-source-files:
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/albertprz/oppressor
+
+library
+  exposed-modules:
+      Chess.Base
+  other-modules:
+      Paths_oppressor
+  hs-source-dirs:
+      src
+  default-extensions:
+      LambdaCase
+      MultiWayIf
+      TupleSections
+      PostfixOperators
+      RankNTypes
+      ExplicitForAll
+      ScopedTypeVariables
+      LiberalTypeSynonyms
+      InstanceSigs
+      FunctionalDependencies
+      DuplicateRecordFields
+      NoFieldSelectors
+      NamedFieldPuns
+      RecordWildCards
+      OverloadedRecordDot
+      ConstrainedClassMethods
+      MultiParamTypeClasses
+      FlexibleContexts
+      FlexibleInstances
+      ApplicativeDo
+      ParallelListComp
+      MonadComprehensions
+      GADTs
+      TypeFamilies
+      TypeFamilyDependencies
+      DataKinds
+      PolyKinds
+      DeriveFunctor
+      DeriveFoldable
+      DeriveTraversable
+      DeriveGeneric
+      GeneralizedNewtypeDeriving
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints
+  build-depends:
+      base >=4.7 && <5
+  default-language: Haskell2010
