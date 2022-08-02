@@ -57,6 +57,7 @@ default-extensions:
 - MultiParamTypeClasses
 - FlexibleContexts
 - FlexibleInstances
+- UndecidableInstances
 
 # Convenience
 - ApplicativeDo
@@ -69,6 +70,8 @@ default-extensions:
 - TypeFamilyDependencies
 - DataKinds
 - PolyKinds
+- TypeOperators
+- ConstraintKinds
 
 # Deriving
 - DeriveFunctor

@@ -24,6 +24,9 @@ source-repository head
 library
   exposed-modules:
       Chess.Base
+      Chess.Move
+      Chess.Program
+      Utils.TypeLevel
   other-modules:
       Paths_oppressor
   hs-source-dirs:
@@ -48,6 +51,7 @@ library
       MultiParamTypeClasses
       FlexibleContexts
       FlexibleInstances
+      UndecidableInstances
       ApplicativeDo
       ParallelListComp
       MonadComprehensions
@@ -56,6 +60,8 @@ library
       TypeFamilyDependencies
       DataKinds
       PolyKinds
+      TypeOperators
+      ConstraintKinds
       DeriveFunctor
       DeriveFoldable
       DeriveTraversable
