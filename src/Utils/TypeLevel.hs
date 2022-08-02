@@ -1,18 +1,32 @@
 module Utils.TypeLevel where
 
 import Chess.Base
+
+import Data.Type.Bool
 import Data.Type.Equality
+import Data.Type.Ord
 import GHC.TypeNats
 
 
 type a /~ b = (a == b) ~ 'False
 
 
+
 class EnumOps (a :: k) where
+
   type family FromNat (n :: Natural) :: k
   type family ToNat a :: Natural
   type family a :+: (n :: Natural) :: k
-  type instance a :+: n = FromNat ((ToNat a) + n)
+  type family a :-: (n :: Natural) :: k
+  type family Distance a (b :: k) :: Natural
+  type family AtDistance a (b :: k) (n :: Natural) :: Bool
+
+  type instance a :+: n  = FromNat ((ToNat a) + n)
+  type instance a :-: n  = FromNat ((ToNat a) - n)
+  type instance Distance a b = If ((ToNat a) >=? (ToNat b))
+                                   ((ToNat a) - (ToNat b))
+                                   ((ToNat b) - (ToNat a))
+  type instance AtDistance a b n = a :+: n == b || a :-: n == b
 
 
 
