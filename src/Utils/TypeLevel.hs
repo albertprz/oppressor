@@ -12,6 +12,8 @@ type a /~ b = (a == b) ~ 'False
 
 
 
+
+
 class EnumOps (a :: k) where
 
   type family FromNat (n :: Natural) :: k

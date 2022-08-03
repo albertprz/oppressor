@@ -24,6 +24,7 @@ source-repository head
 library
   exposed-modules:
       Chess.Base
+      Chess.Board
       Chess.Move
       Chess.Program
       Utils.TypeLevel

@@ -5,13 +5,17 @@ import Data.Kind (Type)
 
 
 data Piece
-  = Pawn'
-  | Knight'
-  | Bishop'
-  | Rook'
-  | Queen'
-  | King'
+  = Pawn
+  | Knight
+  | Bishop
+  | Rook
+  | Queen
+  | King
   deriving (Eq, Show)
+
+data Color
+  = White
+  | Black
 
 data File
   = A
@@ -37,13 +41,19 @@ data Rank
 
 
 
-data PieceVal :: Piece -> Type where
-  Pawn :: PieceVal 'Pawn'
-  Knight :: PieceVal 'Knight'
-  Bishop :: PieceVal 'Bishop'
-  Rook :: PieceVal 'Rook'
-  Queen :: PieceVal 'Queen'
-  King :: PieceVal 'King'
+data PieceVal :: Color -> Piece -> Type where
+  WPawn :: PieceVal 'White 'Pawn
+  WKnight :: PieceVal 'White 'Knight
+  WBishop :: PieceVal 'White 'Bishop
+  WRook :: PieceVal 'White 'Rook
+  WQueen :: PieceVal 'White 'Queen
+  WKing :: PieceVal 'White 'King
+  BPawn :: PieceVal 'Black 'Pawn
+  BKnight :: PieceVal 'Black 'Knight
+  BBishop :: PieceVal 'Black 'Bishop
+  BRook :: PieceVal 'Black 'Rook
+  BQueen :: PieceVal 'Black 'Queen
+  BKing :: PieceVal 'Black 'King
 
 
 data Position :: File -> Rank -> Type where
