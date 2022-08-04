@@ -27,7 +27,8 @@ ghc-options:
 - -Wcompat
 - -Wincomplete-record-updates
 - -Wincomplete-uni-patterns
-- -Wredundant-constraints
+- -Wno-missing-signatures
+- -Wno-partial-type-signatures
 
 
 default-extensions:
@@ -44,6 +45,7 @@ default-extensions:
 - LiberalTypeSynonyms
 - InstanceSigs
 - FunctionalDependencies
+- PartialTypeSignatures
 
 # Records
 - DuplicateRecordFields
@@ -81,4 +83,6 @@ default-extensions:
 - GeneralizedNewtypeDeriving
 
 library:
-  source-dirs: src
+  source-dirs:
+    - src
+    - test

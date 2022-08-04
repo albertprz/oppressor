@@ -28,10 +28,12 @@ library
       Chess.Move
       Chess.Program
       Utils.TypeLevel
+      Chess
   other-modules:
       Paths_oppressor
   hs-source-dirs:
       src
+      test
   default-extensions:
       LambdaCase
       MultiWayIf
@@ -43,6 +45,7 @@ library
       LiberalTypeSynonyms
       InstanceSigs
       FunctionalDependencies
+      PartialTypeSignatures
       DuplicateRecordFields
       NoFieldSelectors
       NamedFieldPuns
@@ -68,7 +71,7 @@ library
       DeriveTraversable
       DeriveGeneric
       GeneralizedNewtypeDeriving
-  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-missing-signatures -Wno-partial-type-signatures
   build-depends:
       base >=4.7 && <5
   default-language: Haskell2010

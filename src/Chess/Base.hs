@@ -1,4 +1,3 @@
-
 module Chess.Base where
 
 import Data.Kind (Type)

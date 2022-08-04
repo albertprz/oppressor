@@ -1,5 +1,4 @@
-{-# OPTIONS_GHC -Wno-redundant-constraints #-}
-module Chess.Move (Move(..), move) where
+module Chess.Move (Move(..), move, move') where
 
 
 import Chess.Base
@@ -11,33 +10,48 @@ import Data.Type.Bool
 import Data.Type.Equality
 
 
-move :: ValidMove u o p a b c d xs
+move :: v ~ 'Valid
         => PieceVal o p
-        -> Position a b
-        -> Position c d
-        -> Board xs u
-        -> Board (xs /-/ '(a, b) /+/ '( '(c, d), '(o, p))) ('Just o)
+        -> Position a1 b1
+        -> Position a2 b2
+        -> Board v c xs
+        -> Board
+        (ValidMove c o p a1 b1 a2 b2 xs &&| v)
+        ('Just o)
+        ((xs /-/ '(a1, b1)) /+/ '( '(a2, b2), '(o, p)))
 
-move k y z board = board /-/ origin /+/ (target, piece)
-  where
-    Move { .. } = Move k y z
+move = move'
 
 
-data Move o p a b c d
+move' :: PieceVal o p
+       -> Position a1 b1
+       -> Position a2 b2
+       -> Board v c xs
+       -> Board
+        (ValidMove c o p a1 b1 a2 b2 xs &&| v)
+        ('Just o)
+        ((xs /-/ '(a1, b1)) /+/ '( '(a2, b2), '(o, p)))
+
+move' = undefined
+
+
+data Move o p a1 b1 a2 b2
   = Move
       { piece  :: PieceVal o p
-      , origin :: Position a b
-      , target :: Position c d
+      , origin :: Position a1 b1
+      , target :: Position a2 b2
       }
 
 
-type ValidMove u o p a b c d xs =
-  (CorrectPlayer u o                      ~ 'True,
-   Contains xs '( '(a, b), '(o, p))       ~ 'True,
-   MoveGen o p a b c d                    ~ 'True,
-   EndSquareWithEnemyPiece o p a b c d xs ~ 'True,
-   MoveBlocked p a b c d xs               ~ 'False,
-   EndSquareBlocked o c d xs              ~ 'False)
+type family ValidMove u o p a1 b1 a2 b2 xs where
+  ValidMove u o p a1 b1 a2 b2 xs = If (
+                                   CorrectPlayer u o &&
+                                   Contains xs '( '(a1, b1), '(o, p)) &&
+                                   MoveGen o p a1 b1 a2 b2 &&
+                                   EndSquareWithEnemyPiece o p a1 b1 a2 b2 xs &&
+                                   Not (MoveBlocked p a1 b1 a2 b2 xs) &&
+                                   Not (EndSquareBlocked o a2 b2 xs))
+                                   'Valid 'Invalid
 
 
 type family CorrectPlayer
@@ -50,10 +64,10 @@ type family CorrectPlayer
 type family MoveGen
             (o :: Color)
             (p :: Piece)
-            (a :: File)
-            (b :: Rank)
-            (c :: File)
-            (d :: Rank)
+            (a1 :: File)
+            (b1 :: Rank)
+            (a2 :: File)
+            (b2 :: Rank)
             :: Bool
   where
 
@@ -84,10 +98,10 @@ type family MoveGen
 
 type family MoveBlocked
             (p :: Piece)
-            (a :: File)
-            (b :: Rank)
-            (c :: File)
-            (d :: Rank)
+            (a1 :: File)
+            (b1 :: Rank)
+            (a2 :: File)
+            (b2 :: Rank)
             (xs :: [((File, Rank), (Color, Piece))])
             :: Bool
   where
@@ -100,8 +114,8 @@ type family MoveBlocked
 
 type family EndSquareBlocked
             (o :: Color)
-            (c :: File)
-            (d :: Rank)
+            (a2 :: File)
+            (b2 :: Rank)
             (xs :: [((File, Rank), (Color, Piece))])
             :: Bool
   where
@@ -110,15 +124,15 @@ type family EndSquareBlocked
 type family EndSquareWithEnemyPiece
             (o :: Color)
             (p :: Piece)
-            (a :: File)
-            (b :: Rank)
-            (c :: File)
-            (d :: Rank)
+            (a1 :: File)
+            (b1 :: Rank)
+            (a2 :: File)
+            (b2 :: Rank)
             (xs :: [((File, Rank), (Color, Piece))])
             :: Bool
   where
-    EndSquareWithEnemyPiece o 'Pawn a b c d xs =
-      NonEmpty (Lookup xs '(c, d)) &&
-      Not (MaybeMapFst (Lookup xs '(c, d)) == 'Just o) ||
-      a == c
+    EndSquareWithEnemyPiece o 'Pawn a1 b1 a2 b2 xs =
+      NonEmpty (Lookup xs '(a2, b2)) &&
+      Not (MaybeMapFst (Lookup xs '(a2, b2)) == 'Just o) ||
+      a1 == a2
     EndSquareWithEnemyPiece _ _ _ _ _ _ _ = 'True
