@@ -16,6 +16,7 @@ data Piece
 data Color
   = White
   | Black
+  deriving (Eq, Show)
 
 data File
   = A

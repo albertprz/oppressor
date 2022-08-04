@@ -11,12 +11,12 @@ import Data.Type.Bool
 import Data.Type.Equality
 
 
-move :: ValidMove o p a b c d xs
+move :: ValidMove u o p a b c d xs
         => PieceVal o p
         -> Position a b
         -> Position c d
-        -> Board xs
-        -> Board (xs /-/ '(a, b) /+/ '( '(c, d), '(o, p)))
+        -> Board xs u
+        -> Board (xs /-/ '(a, b) /+/ '( '(c, d), '(o, p))) ('Just o)
 
 move k y z board = board /-/ origin /+/ (target, piece)
   where
@@ -31,12 +31,20 @@ data Move o p a b c d
       }
 
 
-type ValidMove o p a b c d xs =
-  (Contains xs '( '(a, b), '(o, p))       ~ 'True,
+type ValidMove u o p a b c d xs =
+  (CorrectPlayer u o                      ~ 'True,
+   Contains xs '( '(a, b), '(o, p))       ~ 'True,
    MoveGen o p a b c d                    ~ 'True,
    EndSquareWithEnemyPiece o p a b c d xs ~ 'True,
    MoveBlocked p a b c d xs               ~ 'False,
    EndSquareBlocked o c d xs              ~ 'False)
+
+
+type family CorrectPlayer
+            (u :: Maybe Color)
+            (o :: Color)
+  where
+    CorrectPlayer u o = Not (u == 'Just o)
 
 
 type family MoveGen
@@ -84,10 +92,10 @@ type family MoveBlocked
             :: Bool
   where
     MoveBlocked 'Knight _ _ _ _ _ = 'False
-    MoveBlocked _ a k b k xs = NonEmpty (Lookups xs (ZipConst (Between a b) k))
+    MoveBlocked _ a k b k xs = NonEmpty (Lookups xs (ZipConst  (Between a b) k))
     MoveBlocked _ k a k b xs = NonEmpty (Lookups xs (ZipConst' (Between a b) k))
-    MoveBlocked _ a b c d xs = NonEmpty (Lookups xs (Zip (Between a c)
-                                                         (Between b d)))
+    MoveBlocked _ a b c d xs = NonEmpty (Lookups xs (Zip       (Between a c)
+                                                               (Between b d)))
 
 
 type family EndSquareBlocked
@@ -95,6 +103,7 @@ type family EndSquareBlocked
             (c :: File)
             (d :: Rank)
             (xs :: [((File, Rank), (Color, Piece))])
+            :: Bool
   where
     EndSquareBlocked o c d xs = MaybeMapFst (Lookup xs '(c, d)) == 'Just o
 
@@ -106,6 +115,7 @@ type family EndSquareWithEnemyPiece
             (c :: File)
             (d :: Rank)
             (xs :: [((File, Rank), (Color, Piece))])
+            :: Bool
   where
     EndSquareWithEnemyPiece o 'Pawn a b c d xs =
       NonEmpty (Lookup xs '(c, d)) &&

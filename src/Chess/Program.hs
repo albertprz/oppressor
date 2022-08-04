@@ -8,10 +8,10 @@ import Chess.Board
 import Chess.Move
 
 
-moves = move WPawn   A2 A4 >>>
-        move WRook   A1 A2 >>>
-        move WPawn   G2 G3 >>>
-        move WBishop F1 H3
+moves = move WPawn   G2 G3 >>>
+        move BKnight B8 C6 >>>
+        move WBishop F1 H3 >>>
+        move BPawn   D7 D5
 
 
 result = moves defaultBoard
