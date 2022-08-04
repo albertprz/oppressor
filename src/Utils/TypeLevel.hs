@@ -3,13 +3,88 @@ module Utils.TypeLevel where
 import Chess.Base
 
 import Data.Type.Bool
-import Data.Type.Equality
 import Data.Type.Ord
 import GHC.TypeNats
 
 
-type a /~ b = (a == b) ~ 'False
+type family  (xs :: [(k, v)]) /+/ (x :: (k, v)) :: [(k, v)] where
+  '[]               /+/ x       = '[x]
+  ('(a, _) ': rest) /+/ '(a, b) = '(a, b) ': rest
+  (x ': rest)       /+/ '(a, b) = x ': (rest /+/ '(a, b))
 
+type family  (xs :: [(k, v)]) /-/ (x :: k) :: [(k, v)] where
+  '[]               /-/ _ = '[]
+  ('(a, _) ': rest) /-/ a = rest
+  (x ': rest)       /-/ a = x ': (rest /-/ a)
+
+
+type family Contains (xs :: [t]) (x :: t) :: Bool where
+  Contains '[] _         = 'False
+  Contains (a ': _) a    = 'True
+  Contains (_ ': rest) a = Contains rest a
+
+type family Lookup (xs :: [(k, v)]) (y :: k) :: Maybe v where
+  Lookup '[] _            = 'Nothing
+  Lookup ('(k, v) ': _) k = 'Just v
+  Lookup (_ ': rest) a    = Lookup rest a
+
+
+type family Lookups (xs :: [(k, v)]) (ys :: [k]) :: [v] where
+  Lookups _ '[]        = '[]
+  Lookups xs (k ': ks) = MaybeToList (Lookup xs k) ++ Lookups xs ks
+
+
+type family MaybeToList (x :: Maybe r) :: [r] where
+  MaybeToList 'Nothing  = '[]
+  MaybeToList ('Just x) = '[x]
+
+
+type family  (x :: [r]) ++ (y :: [r]) :: [r] where
+  '[]       ++ ys  = ys
+  (x ': xs) ++ ys  = x ': (xs ++ ys)
+
+
+type family   Empty (xs :: m a) :: Bool
+type instance Empty 'Nothing  = 'True
+type instance Empty ('Just x) = 'False
+type instance Empty '[]       = 'True
+type instance Empty (x ': _)  = 'False
+
+type family NonEmpty (x :: m a) :: Bool where
+  NonEmpty x = Not (Empty x)
+
+
+type family MaybeMapFst (x :: Maybe (a, k)) :: Maybe a where
+  MaybeMapFst 'Nothing        = 'Nothing
+  MaybeMapFst ('Just '(x, y)) = 'Just x
+
+type family MapFromNat (xs :: [Natural]) where
+  MapFromNat '[] = '[]
+  MapFromNat (x ': xs) = FromNat x ': MapFromNat xs
+
+
+
+type family Zip (xs :: [k]) (ys :: [r]) :: [(k, r)] where
+  Zip _ '[] = '[]
+  Zip '[] _ = '[]
+  Zip (a ': as) (b ': bs) = '(a, b) ': Zip as bs
+
+type family ZipConst (xs :: [k]) (y :: r) :: [(k, r)] where
+  ZipConst '[] _ = '[]
+  ZipConst (a ': as) b = '(a, b) ': ZipConst as b
+
+type family ZipConst' (xs :: [k]) (y :: r) :: [(r, k)] where
+  ZipConst' '[] _ = '[]
+  ZipConst' (a ': as) b = '(b, a) ': ZipConst' as b
+
+type family Range (n1 :: Natural) (n2 :: Natural) :: [Natural] where
+  Range 0 _ = '[]
+  Range _ 0 = '[]
+  Range n1 n2 = If ((n1 >? n2 + 1))
+                   (n1 - 1 ': Range (n1 - 1) n2)
+                   (If (n2 >? n1 + 1)
+                       (n2 - 1 ': Range n1 (n2 - 1))
+                     '[])
 
 
 
@@ -21,14 +96,16 @@ class EnumOps (a :: k) where
   type family a :+: (n :: Natural) :: k
   type family a :-: (n :: Natural) :: k
   type family Distance a (b :: k) :: Natural
-  type family AtDistance a (b :: k) (n :: Natural) :: Bool
+  type family Between a (b :: k) :: [k]
 
   type instance a :+: n  = FromNat ((ToNat a) + n)
   type instance a :-: n  = FromNat ((ToNat a) - n)
+
   type instance Distance a b = If ((ToNat a) >=? (ToNat b))
                                    ((ToNat a) - (ToNat b))
                                    ((ToNat b) - (ToNat a))
-  type instance AtDistance a b n = a :+: n == b || a :-: n == b
+
+  type instance Between a b = MapFromNat (Range (ToNat a) (ToNat b))
 
 
 
