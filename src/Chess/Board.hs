@@ -1,23 +1,35 @@
 module Chess.Board where
 
 import Chess.Base
+import GHC.Natural (Natural)
 
 
 data ValidState = Valid | Invalid
+
 
 type family (x :: ValidState) &&| (y :: ValidState) where
   'Valid &&| y = y
   x &&| 'Valid = x
 
 
-data Board (v :: ValidState) (c :: Maybe Color)
-           (xs :: [((File, Rank), (Color, Piece))])
+data Board  (v :: ValidState)
+            (t :: Turn)
+            (c :: Color)
+            (xs :: [((File, Rank), (Color, Piece))])
   where
-    Empty :: Board 'Valid 'Nothing '[]
+    Empty :: Board 'Valid 0 'Black '[]
     (:::) :: (Position a b, PieceVal o p)
-            -> Board v c xs
-            -> Board v c ( '( '(a, b), '(o, p)) ': xs)
+            -> Board v t c xs
+            -> Board v t c ( '( '(a, b), '(o, p)) ': xs)
 infixr 6 :::
+
+data ValidBoard (t :: Turn)
+                (c :: Color)
+
+data InValidBoard (t :: Turn)
+                  (c :: Color)
+
+type Turn = Natural
 
 
 defaultBoard =

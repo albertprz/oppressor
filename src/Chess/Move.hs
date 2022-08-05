@@ -1,4 +1,4 @@
-module Chess.Move (Move(..), move, move') where
+module Chess.Move (Move(..), move, checkValid, checkInvalid) where
 
 
 import Chess.Base
@@ -8,31 +8,31 @@ import Utils.TypeLevel
 
 import Data.Type.Bool
 import Data.Type.Equality
+import GHC.TypeNats
 
 
-move :: v ~ 'Valid
-        => PieceVal o p
-        -> Position a1 b1
-        -> Position a2 b2
-        -> Board v c xs
-        -> Board
-        (ValidMove c o p a1 b1 a2 b2 xs &&| v)
-        ('Just o)
-        ((xs /-/ '(a1, b1)) /+/ '( '(a2, b2), '(o, p)))
+move :: BoardMove o p a1 b1 a2 b2 v t c xs
+move = undefined
 
-move = move'
+checkValid :: v ~ 'Valid =>
+              Board v t c xs -> ValidBoard t c
+checkValid = undefined
+
+checkInvalid :: v ~ 'Invalid =>
+                Board v t c xs -> InValidBoard t c
+checkInvalid = undefined
 
 
-move' :: PieceVal o p
+type BoardMove o p a1 b1 a2 b2 v t c xs =
+         PieceVal o p
        -> Position a1 b1
        -> Position a2 b2
-       -> Board v c xs
+       -> Board v t c xs
        -> Board
         (ValidMove c o p a1 b1 a2 b2 xs &&| v)
-        ('Just o)
+        (If (c == 'Black) (t + 1) t)
+        o
         ((xs /-/ '(a1, b1)) /+/ '( '(a2, b2), '(o, p)))
-
-move' = undefined
 
 
 data Move o p a1 b1 a2 b2
@@ -55,10 +55,10 @@ type family ValidMove u o p a1 b1 a2 b2 xs where
 
 
 type family CorrectPlayer
-            (u :: Maybe Color)
+            (c :: Color)
             (o :: Color)
   where
-    CorrectPlayer u o = Not (u == 'Just o)
+    CorrectPlayer u o = Not (u == o)
 
 
 type family MoveGen
