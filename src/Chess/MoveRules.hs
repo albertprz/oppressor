@@ -1,4 +1,4 @@
-module Chess.Move  where
+module Chess.MoveRules  where
 
 
 import Utils.TypeLevel

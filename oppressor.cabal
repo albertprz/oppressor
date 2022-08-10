@@ -25,8 +25,7 @@ library
   exposed-modules:
       Chess.Base
       Chess.Board
-      Chess.Move
-      Chess.Program
+      Chess.MoveRules
       Utils.TypeLevel
       Chess
   other-modules:
