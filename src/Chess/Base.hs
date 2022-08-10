@@ -40,7 +40,6 @@ data Rank
   deriving (Enum, Eq, Ord, Show)
 
 
-
 data PieceVal :: Color -> Piece -> Type where
   WPawn :: PieceVal 'White 'Pawn
   WKnight :: PieceVal 'White 'Knight
@@ -54,6 +53,8 @@ data PieceVal :: Color -> Piece -> Type where
   BRook :: PieceVal 'Black 'Rook
   BQueen :: PieceVal 'Black 'Queen
   BKing :: PieceVal 'Black 'King
+
+deriving instance Show (PieceVal c p)
 
 
 data Position :: File -> Rank -> Type where
@@ -121,3 +122,5 @@ data Position :: File -> Rank -> Type where
   H6 :: Position 'H 'R6
   H7 :: Position 'H 'R7
   H8 :: Position 'H 'R8
+
+deriving instance Show (Position a1 a2)

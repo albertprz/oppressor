@@ -71,7 +71,58 @@ library
       DeriveTraversable
       DeriveGeneric
       GeneralizedNewtypeDeriving
+      StandaloneDeriving
   ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-missing-signatures -Wno-partial-type-signatures
   build-depends:
       base >=4.7 && <5
+  default-language: Haskell2010
+
+executable oppressor
+  main-is: Main.hs
+  other-modules:
+      Paths_oppressor
+  hs-source-dirs:
+      app
+  default-extensions:
+      LambdaCase
+      MultiWayIf
+      TupleSections
+      PostfixOperators
+      RankNTypes
+      ExplicitForAll
+      ScopedTypeVariables
+      LiberalTypeSynonyms
+      InstanceSigs
+      FunctionalDependencies
+      PartialTypeSignatures
+      DuplicateRecordFields
+      NoFieldSelectors
+      NamedFieldPuns
+      RecordWildCards
+      OverloadedRecordDot
+      ConstrainedClassMethods
+      MultiParamTypeClasses
+      FlexibleContexts
+      FlexibleInstances
+      UndecidableInstances
+      ApplicativeDo
+      ParallelListComp
+      MonadComprehensions
+      GADTs
+      TypeFamilies
+      TypeFamilyDependencies
+      DataKinds
+      PolyKinds
+      TypeOperators
+      ConstraintKinds
+      DeriveFunctor
+      DeriveFoldable
+      DeriveTraversable
+      DeriveGeneric
+      GeneralizedNewtypeDeriving
+      StandaloneDeriving
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-missing-signatures -Wno-partial-type-signatures -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , oppressor
   default-language: Haskell2010

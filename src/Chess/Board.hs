@@ -1,8 +1,47 @@
 module Chess.Board where
 
 import Chess.Base
-import GHC.Natural (Natural)
+import GHC.TypeNats
+import Chess.Move
 
+import Utils.TypeLevel
+
+import Data.Type.Bool
+import Data.Type.Equality
+
+
+move :: BoardMove o p a1 b1 a2 b2 v t c xs m
+move = MkMove
+
+checkValid :: v ~ 'Valid =>
+              Board v t c xs -> ValidBoard t c
+checkValid = MkValid
+
+checkInvalid :: v ~ 'Invalid =>
+                Board v t c xs -> InValidBoard t c
+checkInvalid = MkInvalid
+
+
+
+type BoardMove o p a1 b1 a2 b2 v t c xs m =
+         PieceVal o p
+       -> Position a1 b1
+       -> Position a2 b2
+       -> Board v t c xs
+       -> Board
+        (If (ValidMove c o p a1 b1 a2 b2 xs) 'Valid 'Invalid &&| v)
+        (If (c == 'Black) (t + 1) t)
+        o
+        ((xs /-/ '(a1, b1)) /+/ '( '(a2, b2), '(o, p)))
+
+
+
+data Move o p a1 b1 a2 b2
+  = Move
+      { piece  :: PieceVal o p
+      , origin :: Position a1 b1
+      , target :: Position a2 b2
+      }
 
 data ValidState = Valid | Invalid
 
@@ -21,13 +60,40 @@ data Board  (v :: ValidState)
     (:::) :: (Position a b, PieceVal o p)
             -> Board v t c xs
             -> Board v t c ( '( '(a, b), '(o, p)) ': xs)
+    MkMove :: PieceVal o p
+            -> Position a1 b1
+            -> Position a2 b2
+            -> Board v t c xs
+            -> Board
+              (If (ValidMove c o p a1 b1 a2 b2 xs) 'Valid 'Invalid &&| v)
+              (If (c == 'Black) (t + 1) t)
+              o
+              ((xs /-/ '(a1, b1)) /+/ '( '(a2, b2), '(o, p)))
+
+
+instance Show (Board v t c xs) where
+  show (MkMove p x1 x2 b) = show b <> "\n -> " <>
+                            show p <> " " <> show x1 <> " " <> show x2
+  show Empty = "\n"
+  show ((x, y) ::: b) = show b <> show (x, y)
+
+instance Show (ValidBoard x y) where
+  show (MkValid b) = show b
+
+instance Show (InValidBoard x y) where
+  show (MkInvalid b) = show b
+
+
 infixr 6 :::
 
 data ValidBoard (t :: Turn)
-                (c :: Color)
+                (c :: Color) where
+  MkValid :: v ~ 'Valid => Board v t c xs -> ValidBoard t c
+
 
 data InValidBoard (t :: Turn)
-                  (c :: Color)
+                  (c :: Color) where
+  MkInvalid :: v ~ 'Invalid => Board v t c xs -> InValidBoard t c
 
 type Turn = Natural
 

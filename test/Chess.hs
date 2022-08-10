@@ -4,7 +4,6 @@ import Control.Arrow ((>>>))
 
 import Chess.Base
 import Chess.Board
-import Chess.Move  (checkInvalid, checkValid, move)
 
 
 -- Invalid states

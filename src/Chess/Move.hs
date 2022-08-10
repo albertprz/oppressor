@@ -1,57 +1,21 @@
-module Chess.Move (Move(..), move, checkValid, checkInvalid) where
+module Chess.Move  where
 
-
-import Chess.Base
-import Chess.Board
 
 import Utils.TypeLevel
 
 import Data.Type.Bool
 import Data.Type.Equality
-import GHC.TypeNats
 
-
-move :: BoardMove o p a1 b1 a2 b2 v t c xs
-move = undefined
-
-checkValid :: v ~ 'Valid =>
-              Board v t c xs -> ValidBoard t c
-checkValid = undefined
-
-checkInvalid :: v ~ 'Invalid =>
-                Board v t c xs -> InValidBoard t c
-checkInvalid = undefined
-
-
-type BoardMove o p a1 b1 a2 b2 v t c xs =
-         PieceVal o p
-       -> Position a1 b1
-       -> Position a2 b2
-       -> Board v t c xs
-       -> Board
-        (ValidMove c o p a1 b1 a2 b2 xs &&| v)
-        (If (c == 'Black) (t + 1) t)
-        o
-        ((xs /-/ '(a1, b1)) /+/ '( '(a2, b2), '(o, p)))
-
-
-data Move o p a1 b1 a2 b2
-  = Move
-      { piece  :: PieceVal o p
-      , origin :: Position a1 b1
-      , target :: Position a2 b2
-      }
-
+import Chess.Base
 
 type family ValidMove u o p a1 b1 a2 b2 xs where
-  ValidMove u o p a1 b1 a2 b2 xs = If (
-                                   CorrectPlayer u o &&
+  ValidMove u o p a1 b1 a2 b2 xs = CorrectPlayer u o &&
                                    Contains xs '( '(a1, b1), '(o, p)) &&
                                    MoveGen o p a1 b1 a2 b2 &&
                                    EndSquareWithEnemyPiece o p a1 b1 a2 b2 xs &&
                                    Not (MoveBlocked p a1 b1 a2 b2 xs) &&
-                                   Not (EndSquareBlocked o a2 b2 xs))
-                                   'Valid 'Invalid
+                                   Not (EndSquareBlocked o a2 b2 xs)
+
 
 
 type family CorrectPlayer
