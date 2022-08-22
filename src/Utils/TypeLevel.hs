@@ -2,10 +2,12 @@ module Utils.TypeLevel where
 
 import Chess.Base
 
+import Data.Kind      (Constraint)
 import Data.Type.Bool
 import Data.Type.Ord
 import GHC.TypeNats
 
+type xs |+| y = y ': xs
 
 type family  (xs :: [(k, v)]) /+/ (x :: (k, v)) :: [(k, v)] where
   '[]               /+/ x       = '[x]
@@ -23,6 +25,10 @@ type family Contains (xs :: [t]) (x :: t) :: Bool where
   Contains (a ': _) a    = 'True
   Contains (_ ': rest) a = Contains rest a
 
+type family ContainsMany (xs :: [t]) (ys :: [t]) :: Bool where
+  ContainsMany _ '[]        = 'True
+  ContainsMany xs (y ': ys) = Contains xs y && ContainsMany xs ys
+
 type family Lookup (xs :: [(k, v)]) (y :: k) :: Maybe v where
   Lookup '[] _            = 'Nothing
   Lookup ('(k, v) ': _) k = 'Just v
@@ -38,6 +44,11 @@ type family MaybeToList (x :: Maybe r) :: [r] where
   MaybeToList 'Nothing  = '[]
   MaybeToList ('Just x) = '[x]
 
+type family Must (x :: Bool) :: Constraint where
+  Must x = x ~ 'True
+
+type family MustNot (x :: Bool) :: Constraint where
+  MustNot x = x ~ 'False
 
 type family  (x :: [r]) ++ (y :: [r]) :: [r] where
   '[]       ++ ys  = ys

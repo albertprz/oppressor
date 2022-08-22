@@ -27,7 +27,9 @@ library
       Chess.Board
       Chess.MoveRules
       Utils.TypeLevel
+      Validations.Base
       Chess
+      Validations
   other-modules:
       Paths_oppressor
   hs-source-dirs:
