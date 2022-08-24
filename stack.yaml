@@ -2,3 +2,6 @@ packages:
 - .
 resolver:
   compiler: ghc-9.2.1
+
+extra-deps:
+  - mtl-2.2.2

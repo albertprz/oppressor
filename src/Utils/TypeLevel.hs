@@ -7,7 +7,10 @@ import Data.Type.Bool
 import Data.Type.Ord
 import GHC.TypeNats
 
-type xs |+| y = y ': xs
+
+type family (xs :: [a]) |+| (y :: a) :: [a] where
+  '[] |+| y = '[y]
+  (x ': xs) |+| y = x ': (xs |+| y)
 
 type family  (xs :: [(k, v)]) /+/ (x :: (k, v)) :: [(k, v)] where
   '[]               /+/ x       = '[x]

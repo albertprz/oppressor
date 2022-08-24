@@ -2,6 +2,7 @@
 
 module Validations.Base where
 
+import Control.Monad.Except (ExceptT)
 import Utils.TypeLevel
 
 
@@ -34,30 +35,31 @@ data CheckoutSummary (a :: [Validation]) (b :: CheckoutState)
   = MkSummary User Cart PaymentDetails
 
 
+type AppM = ExceptT ClientError IO
 
-authUser :: User
-          -> CheckoutSummary a b
-          -> Either ClientError (IO (CheckoutSummary (a |+| 'AuthUser) b))
+
+authUser :: CheckoutSummary a b
+          -> AppM (CheckoutSummary (a |+| 'AuthUser) b)
 authUser = undefined
 
 validateCart :: CheckoutSummary a b
-              -> Either ClientError (IO (CheckoutSummary (a |+| 'ValidPaymentDetails) b))
+              -> AppM (CheckoutSummary (a |+| 'ValidCart) b)
 validateCart = undefined
 
 checkPaymentDetails :: CheckoutSummary a b
-                     -> Either ClientError (IO (CheckoutSummary (a |+| 'ValidPaymentDetails) b))
+                     -> AppM (CheckoutSummary (a |+| 'ValidPaymentDetails) b)
 checkPaymentDetails = undefined
 
 confirmPurchase :: CheckoutSummary a b
-                 -> Either ClientError (IO (CheckoutSummary (a |+| 'ConfirmedPurchase) b))
+                 -> AppM (CheckoutSummary (a |+| 'ConfirmedPurchase) b)
 confirmPurchase = undefined
 
 
-checkout :: Must (ContainsMany a ['AuthUser, 'ValidPaymentDetails])
+checkout :: Must (ContainsMany a ['AuthUser, 'ValidCart])
           => CheckoutSummary a 'New
-          -> Either ClientError (IO (CheckoutSummary a 'Paid))
+          -> AppM (CheckoutSummary a 'Paid)
 checkout = undefined
 
 completePurchase :: Must (ContainsMany a ['AuthUser, 'ValidCart,       'ValidPaymentDetails, 'ConfirmedPurchase])
-                 => CheckoutSummary a 'Paid -> Either ClientError (IO (CheckoutSummary a 'Complete))
+                 => CheckoutSummary a 'Paid -> AppM (CheckoutSummary a 'Complete)
 completePurchase = undefined

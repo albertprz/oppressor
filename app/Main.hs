@@ -18,7 +18,6 @@ opening = move WPawn   E2 E4 >>>
           move BPawn   A7 A6
 
 
-
 result :: ValidBoard 5 'Black
 result = checkValid $ opening defaultBoard
 
