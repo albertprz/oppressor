@@ -14,7 +14,7 @@ data Validation
 
 data CheckoutState
   = New
-  | Paid
+  | InProcess
   | Complete
 
 data ClientError
@@ -57,9 +57,9 @@ confirmPurchase = undefined
 
 checkout :: Must (ContainsMany a ['AuthUser, 'ValidCart])
           => CheckoutSummary a 'New
-          -> AppM (CheckoutSummary a 'Paid)
+          -> AppM (CheckoutSummary a 'InProcess)
 checkout = undefined
 
 completePurchase :: Must (ContainsMany a ['AuthUser, 'ValidCart,       'ValidPaymentDetails, 'ConfirmedPurchase])
-                 => CheckoutSummary a 'Paid -> AppM (CheckoutSummary a 'Complete)
+                 => CheckoutSummary a 'InProcess -> AppM (CheckoutSummary a 'Complete)
 completePurchase = undefined

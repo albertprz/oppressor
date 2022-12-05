@@ -6,14 +6,14 @@ import Validations.Base
 
 
 checkoutStep :: CheckoutSummary _ 'New
-              -> AppM (CheckoutSummary _ 'Paid)
+              -> AppM (CheckoutSummary _ 'InProcess)
 checkoutStep =
   authUser >=>
   validateCart >=>
   checkout
 
 
-completePurchaseStep :: CheckoutSummary _ 'Paid
+completePurchaseStep :: CheckoutSummary _ 'InProcess
                       -> AppM (CheckoutSummary _ 'Complete)
 completePurchaseStep =
   checkPaymentDetails >=>
